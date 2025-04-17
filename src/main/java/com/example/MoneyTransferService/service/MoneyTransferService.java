@@ -4,7 +4,7 @@ import com.example.MoneyTransferService.dto.Amount;
 import com.example.MoneyTransferService.dto.ConfirmOperationRequest;
 import com.example.MoneyTransferService.dto.MoneyTransferRequest;
 import com.example.MoneyTransferService.dto.OperationResponse;
-import exception.InvalidCodeException;
+import com.example.MoneyTransferService.exception.InvalidCodeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

@@ -4,7 +4,9 @@ import com.example.MoneyTransferService.dto.Amount;
 import com.example.MoneyTransferService.dto.ConfirmOperationRequest;
 import com.example.MoneyTransferService.dto.MoneyTransferRequest;
 import com.example.MoneyTransferService.dto.OperationResponse;
+import com.example.MoneyTransferService.exception.InvalidCodeException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -14,6 +16,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.UUID;
 
+/**
+ * Юнит-тесты.
+ */
 @SpringBootTest
 public class MoneyTransferServiceTest {
 
@@ -24,6 +29,7 @@ public class MoneyTransferServiceTest {
     OperationService operationService;
 
     @Test
+    @DisplayName("Проверить метод перевода денег. Должен вернуть корректный идентификатор.")
     void transferMoneyTest() {
         MoneyTransferRequest request = new MoneyTransferRequest();
         request.setCardFromNumber("2142354345465775");
@@ -40,13 +46,34 @@ public class MoneyTransferServiceTest {
         Assertions.assertEquals(response.getOperationId(), String.valueOf(knownUuidValue));
     }
 
-    void confirmOperationTest() {
-        String operationId = UUID.randomUUID().toString();
+    @Test
+    @DisplayName("Проверить метод подтверждения операции. Верный код. Должен вернуть корректный идентификатор.")
+    void confirmOperationTestPositive() {
+        UUID operationId = UUID.randomUUID();
 
-        ConfirmOperationRequest request = new ConfirmOperationRequest();
-        request.setCode("0000");
-        request.setOperationId(operationId);
+        ConfirmOperationRequest confirmOperationRequest = new ConfirmOperationRequest();
+        confirmOperationRequest.setOperationId(String.valueOf(operationId));
+        confirmOperationRequest.setCode("0000");
 
+        OperationResponse response = moneyTransferService.confirmOperation(confirmOperationRequest);
 
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getOperationId(), String.valueOf(operationId));
+    }
+
+    @Test
+    @DisplayName("Проверить метод подтверждения операции. Неверный код. Должен выбросить исключение.")
+    void confirmOperationTestNegative() {
+        UUID operationId = UUID.randomUUID();
+
+        ConfirmOperationRequest confirmOperationRequest = new ConfirmOperationRequest();
+        confirmOperationRequest.setOperationId(String.valueOf(operationId));
+        confirmOperationRequest.setCode("1111");
+
+        InvalidCodeException e = Assertions.assertThrows(InvalidCodeException.class,
+                () -> moneyTransferService.confirmOperation(confirmOperationRequest));
+
+        Assertions.assertNotNull(e);
+        Assertions.assertEquals(e.getMessage(), "передан неверный код");
     }
 }

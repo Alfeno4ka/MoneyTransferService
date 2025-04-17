@@ -1,0 +1,6 @@
+FROM node:18-alpine as frontend
+ADD card-transfer-master /app
+WORKDIR /app
+RUN npm install
+EXPOSE 3000
+RUN npm run start

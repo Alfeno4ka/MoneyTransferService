@@ -1,1 +1,13 @@
 services:
+  money-transfer-service-be:
+    build:
+      dockerfile: Dockerfile
+    image: 'monet-be'
+    ports:
+      - "5500:5500"
+  money-transfer-service-fe:
+    build:
+      dockerfile: DockerfileFrontend
+    image: 'monet-fe'
+    ports:
+      - "3000:3000"
